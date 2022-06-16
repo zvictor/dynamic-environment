@@ -10,7 +10,8 @@
   },
   "files": [
     "dist/",
-    "index.ts"
+    "detectors/",
+    "*.ts"
   ],
   "scripts": {
     "build": "tsup --dts-resolve",
