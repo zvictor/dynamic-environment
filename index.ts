@@ -4,6 +4,10 @@ type Detectors = {
   [key: string]: () => boolean | void
 }
 
+type Config = {
+  revaluateContext: boolean
+}
+
 export const ERRORS = {
   UNDETECTABLE_CONTEXT: `No compatible context has been detected`,
   VALUE_NOT_FOUND: `No respective value found for active context`,
@@ -22,11 +26,13 @@ const runIfFunction = <T>(value: T): T extends (...args: any) => any ? ReturnTyp
 
 export default class DynamicEnvironment<T extends Detectors> {
   private setup: Detectors
+  private config: Config
+  private pristine = true
   private activeContext: keyof T | null = null
 
-  constructor(setup: T) {
+  constructor(setup: T, config = { revaluateContext: false }) {
     this.setup = setup
-    this.activeContext = this.revealContext()
+    this.config = config
   }
 
   get contexts(): DoubleRecord<keyof T> {
@@ -36,6 +42,8 @@ export default class DynamicEnvironment<T extends Detectors> {
   }
 
   revealContext() {
+    this.pristine = false
+
     for (const [env, detector] of Object.entries(this.setup)) {
       if (detector()) {
         this.activeContext = env
@@ -48,6 +56,10 @@ export default class DynamicEnvironment<T extends Detectors> {
   }
 
   pick(data: Partial<Record<keyof T, unknown>>): unknown {
+    if (this.pristine || this.config.revaluateContext) {
+      this.revealContext()
+    }
+
     if (!this.activeContext) {
       throw new Error(ERRORS.UNDETECTABLE_CONTEXT)
     }
