@@ -16,6 +16,10 @@ export const demand = (value: any, name?: string) => {
 
   return value
 }
+
+const runIfFunction = <T>(value: T): T extends (...args: any) => any ? ReturnType<T> : T =>
+  value instanceof Function && typeof value === 'function' ? value() : value
+
 export default class DynamicEnvironment<T extends Detectors> {
   private setup: Detectors
   private activeContext: keyof T | null = null
@@ -54,5 +58,23 @@ export default class DynamicEnvironment<T extends Detectors> {
     }
 
     return data[this.activeContext]
+  }
+
+  tree(obj: Record<PropertyKey, any>): unknown {
+    const self = this
+
+    try {
+      return new Proxy(obj, {
+        get(target, name) {
+          if (!target.hasOwnProperty(name)) {
+            return target[name]
+          }
+
+          return self.tree(runIfFunction(target[name]))
+        },
+      })
+    } catch (e) {
+      return obj
+    }
   }
 }

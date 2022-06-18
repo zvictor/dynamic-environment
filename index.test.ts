@@ -1,5 +1,8 @@
 import test from 'ava'
-import DynamicEnvironment from './index'
+import expect from 'expect'
+import DynamicEnvironment, { demand } from './index'
+
+const sample = <T>(array: T[]): T => array[Math.floor(Math.random() * array.length)]!
 
 test('detects context while giving FIFO preference', (t) => {
   let a = true
@@ -67,4 +70,67 @@ test('throws error when demanded values are not found', (t) => {
   t.throws(() => demand(undefined, 'MY_VAR'), {
     message: `required variable 'MY_VAR' has not been defined`,
   })
+})
+
+test('builds a static tree with no magic', (t) => {
+  const env = new DynamicEnvironment({
+    WRONG: () => false,
+    RIGHT: () => true,
+  })
+
+  let best = 'nextjs'
+  let worst = () => sample(['angularjs', 'angular'])
+
+  t.deepEqual(
+    {
+      framework: {
+        best: env.pick({
+          RIGHT: demand(best),
+          WRONG: 'meteor',
+        }),
+        worst: env.pick({
+          WRONG: 'emberjs',
+          RIGHT: worst,
+        }),
+      },
+    },
+    {
+      framework: {
+        best: 'nextjs',
+        worst,
+      },
+    }
+  )
+})
+
+test('builds a static tree executing the functions', (t) => {
+  const env = new DynamicEnvironment({
+    WRONG: () => false,
+    RIGHT: () => true,
+  })
+
+  let best = 'nextjs'
+  let worst = () => sample(['angularjs', 'angular'])
+
+  expect(
+    env.tree({
+      framework: {
+        best: env.pick({
+          RIGHT: demand(best),
+          WRONG: 'meteor',
+        }),
+        worst: env.pick({
+          WRONG: 'emberjs',
+          RIGHT: worst,
+        }),
+      },
+    })
+  ).toEqual({
+    framework: {
+      best: 'nextjs',
+      worst: expect.stringMatching(/angular(js)?/),
+    },
+  })
+
+  t.pass()
 })
