@@ -53,3 +53,18 @@ test('lists available contexts', (t) => {
     { A: 'A', B: 'B' }
   )
 })
+
+test('returns demanded values when possible', (t) => {
+  t.deepEqual(demand(1), 1)
+  t.deepEqual(demand(2, 'MY_VAR'), 2)
+  t.deepEqual(demand(false, 'MY_VAR'), false)
+  t.deepEqual(demand('undefined', 'MY_VAR'), 'undefined')
+})
+
+test('throws error when demanded values are not found', (t) => {
+  let a: string
+  t.throws(() => demand(a), { message: `required variable has not been defined` })
+  t.throws(() => demand(undefined, 'MY_VAR'), {
+    message: `required variable 'MY_VAR' has not been defined`,
+  })
+})

@@ -9,6 +9,13 @@ export const ERRORS = {
   VALUE_NOT_FOUND: `No respective value found for active context`,
 }
 
+export const demand = (value: any, name?: string) => {
+  if (value === undefined) {
+    throw new Error(`required variable ${name ? `'${name}' ` : ''}has not been defined`)
+  }
+
+  return value
+}
 export default class DynamicEnvironment<T extends Detectors> {
   private setup: Detectors
   private activeContext: keyof T | null = null
