@@ -12,7 +12,7 @@ test('checks negative condition - no bundle', (t) => {
       new DynamicEnvironment({
         SSR,
       }).pick({ SSR: 1 }),
-    { message: ERRORS.UNDETECTABLE_ENVIRONMENT }
+    { message: ERRORS.UNDETECTABLE_CONTEXT }
   )
 })
 
@@ -26,7 +26,7 @@ test('checks negative condition - browser', (t) => {
       new DynamicEnvironment({
         SSR,
       }).pick({ SSR: 1 }),
-    { message: ERRORS.UNDETECTABLE_ENVIRONMENT }
+    { message: ERRORS.UNDETECTABLE_CONTEXT }
   )
 })
 

@@ -13,7 +13,7 @@ test('checks negative condition', (t) => {
       new DynamicEnvironment({
         SERVER,
       }).pick({ SERVER: 1 }),
-    { message: ERRORS.UNDETECTABLE_ENVIRONMENT }
+    { message: ERRORS.UNDETECTABLE_CONTEXT }
   )
 })
 

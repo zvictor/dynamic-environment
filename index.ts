@@ -5,46 +5,47 @@ type Detectors = {
 }
 
 export const ERRORS = {
-  UNDETECTABLE_ENVIRONMENT: `No compatible environment has been detected`,
-  VALUE_NOT_FOUND: `No respective value found for active environment`,
+  UNDETECTABLE_CONTEXT: `No compatible context has been detected`,
+  VALUE_NOT_FOUND: `No respective value found for active context`,
 }
 
 export default class DynamicEnvironment<T extends Detectors> {
   private setup: Detectors
-  private activeEnv: keyof T | null = null
+  private activeContext: keyof T | null = null
 
   constructor(setup: T) {
     this.setup = setup
-    this.activeEnv = this.revealEnvironment()
+    this.activeContext = this.revealContext()
   }
 
-  get environments(): DoubleRecord<keyof T> {
+  get contexts(): DoubleRecord<keyof T> {
     return <DoubleRecord<keyof T>>(
       Object.fromEntries(Object.keys(this.setup).map((key) => [key, key]))
     )
   }
 
-  revealEnvironment() {
+  revealContext() {
     for (const [env, detector] of Object.entries(this.setup)) {
       if (detector()) {
-        this.activeEnv = env
+        this.activeContext = env
         return env
       }
     }
 
-    this.activeEnv = null
+    this.activeContext = null
     return null
   }
 
   pick(data: Partial<Record<keyof T, unknown>>): unknown {
-    if (!this.activeEnv) {
-      throw new Error(ERRORS.UNDETECTABLE_ENVIRONMENT)
+    if (!this.activeContext) {
+      throw new Error(ERRORS.UNDETECTABLE_CONTEXT)
     }
 
-    if (!data.hasOwnProperty(this.activeEnv)) {
+    if (!data.hasOwnProperty(this.activeContext)) {
+      console.warn(`The active context is '${String(this.activeContext)}'`)
       throw new Error(ERRORS.VALUE_NOT_FOUND)
     }
 
-    return data[this.activeEnv]
+    return data[this.activeContext]
   }
 }

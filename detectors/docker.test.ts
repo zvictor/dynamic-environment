@@ -25,7 +25,7 @@ if (inDocker) {
         new DynamicEnvironment({
           DOCKER,
         }).pick({ DOCKER: 1 }),
-      { message: ERRORS.UNDETECTABLE_ENVIRONMENT }
+      { message: ERRORS.UNDETECTABLE_CONTEXT }
     )
   })
 }

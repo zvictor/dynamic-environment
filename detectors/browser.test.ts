@@ -11,7 +11,7 @@ test('checks standard conditions', (t) => {
       new DynamicEnvironment({
         BROWSER,
       }).pick({ BROWSER: 1 }),
-    { message: ERRORS.UNDETECTABLE_ENVIRONMENT }
+    { message: ERRORS.UNDETECTABLE_CONTEXT }
   )
 })
 
@@ -25,7 +25,7 @@ test('checks negative condition', (t) => {
       new DynamicEnvironment({
         BROWSER,
       }).pick({ BROWSER: 1 }),
-    { message: ERRORS.UNDETECTABLE_ENVIRONMENT }
+    { message: ERRORS.UNDETECTABLE_CONTEXT }
   )
 })
 
