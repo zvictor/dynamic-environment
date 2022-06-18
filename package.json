@@ -3,7 +3,15 @@
   "license": "MIT",
   "version": "1.0.0",
   "main": "./dist/index.js",
+  "module": "dist/index.mjs",
   "types": "./dist/index.d.js",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    },
+    "./detectors/*": "./detectors/*.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/zvictor/dynamic-environment.git"
@@ -14,6 +22,7 @@
     "*.ts"
   ],
   "scripts": {
+    "prepublishOnly": "rm -Rf ./dist ; npm run build",
     "build": "tsup --dts-resolve",
     "test": "ava"
   },
