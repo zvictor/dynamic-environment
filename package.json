@@ -19,7 +19,8 @@
   "files": [
     "dist/",
     "detectors/",
-    "*.ts"
+    "*.ts",
+    "!**/*.test.ts"
   ],
   "scripts": {
     "prepublishOnly": "rm -Rf ./dist ; npm run build",
