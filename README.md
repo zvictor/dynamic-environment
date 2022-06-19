@@ -1,5 +1,5 @@
 <p align="center">
-<strong>Dynamic variables based on environment (or anything else!)</strong><br />
+<strong>Dynamic variables based on environment/context (or anything else!)</strong><br />
 <sub>dynamic-environment is a minimalist choice for switching values based on given conditions in your running app.</sub>
 </p>
 
@@ -64,6 +64,16 @@ Check the list of [available detectors](https://github.com/zvictor/dynamic-envir
 
 ### Advanced usage
 
+#### Require values
+
+Throw an error if the value you need has not been provided
+```typescript
+import { demand } from 'dynamic-environment'
+
+// either returns the value or throws `required variable 'API_SECRET' has not been defined`
+const API_SECRET = demand(process.env.API_SECRET, 'API_SECRET')
+```
+
 #### Custom contexts
 
 You can easily write your own context detector.
@@ -84,8 +94,38 @@ console.log(env.pick({
 
 const osVersion = env.pick({ LINUX: `lsb_release -a`, MAC: `sw_vers` })
 execaSync(osVersion, { stdio: 'inherit' })
+
 // This is what you PAID for:
 // ProductName:	macOS
 // ProductVersion:	12.4
 // BuildVersion:	21F79
+```
+
+#### Env tree and delayed execution
+
+You can put together all your data into one well organized object instead of having multiple variables spread around.
+
+**Note: `env.tree` lazily executes functions inside objects.**
+
+```typescript
+const env = new DynamicEnvironment({
+  BROWSER,
+  SSR,
+}).tree({
+  uploader: {
+    endpoint: env.pick({
+      BROWSER: () => demand(process.env.UPLOADER_PUBLIC_ENDPOINT),
+      SSR: 'uploader:8080',
+    }),
+    secret: env.pick({
+      BROWSER: () => demand(process.env.UPLOADER_PUBLIC_SECRET),
+      SSR: () => demand(process.env.UPLOADER_ADMIN_SECRET),
+    }),
+  },
+})
+
+console.log(
+  env.uploader.endpoint, // uploader:8080
+  env.uploader.secret // klajsdjDiJjaoasdSJDS
+)
 ```
